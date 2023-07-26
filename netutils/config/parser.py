@@ -1575,3 +1575,15 @@ class FastironConfigParser(CiscoConfigParser):
                 except StopIteration:
                     return None
         raise ValueError("Unable to parse banner end.")
+
+
+class AdvaConfigParser(BaseSpaceConfigParser):
+    """Adva Embedded OS config parser."""
+
+    comment_chars: t.List[str] = ["#", "home", "back"]
+    banner_start: t.List[str] = []
+
+    @property
+    def banner_end(self) -> str:
+        """Demarcate End of Banner char(s)."""
+        raise NotImplementedError("Adva Embedded OS platform doesn't have a banner.")
