@@ -1583,7 +1583,130 @@ class AdvaConfigParser(BaseSpaceConfigParser):
     comment_chars: t.List[str] = ["#", "home", "back"]
     banner_start: t.List[str] = []
 
+
+    def __init__(self, config: str):
+        """Create ConfigParser Object.
+
+        Args:
+            config: The config text to parse.
+        """
+        self.config = config
+        self._config: t.Optional[str] = None
+        self._current_parents: t.Tuple[str, ...] = ()
+        self.generator_config = (line for line in self.config_lines_only.splitlines())
+        self.config_lines: t.List[ConfigLine] = []
+        self.all_config_lines: t.List[ConfigLine] = []
+        self.build_config_relationship()
+
     @property
     def banner_end(self) -> str:
         """Demarcate End of Banner char(s)."""
         raise NotImplementedError("Adva Embedded OS platform doesn't have a banner.")
+
+    def _update_config_lines(self, config_line: str) -> None:
+        """Add a ``ConfigLine`` object to ``self.config_lines``.
+
+        Args:
+            config_line: The current config line being evaluated.
+
+        Returns:
+            None
+        """
+        entry = ConfigLine(config_line, self._current_parents)
+        self.all_config_lines.append(entry)
+
+        # Deduplicate lines - parent sections i.e. "configure snmp" should be recorded only once
+        if entry not in self.config_lines:
+            self.config_lines.append(entry)
+
+    def _build_nested_config(self, line: str) -> t.Optional[str]:
+        """Handle building child config sections.
+
+        Args:
+            line: A configuration line from the configuration text.
+
+        Returns:
+            The next top-level configuration line in the configuration text or None when the last line of configuration
+            text is a nested configuration line.
+
+        Raises:
+            IndexError: When the number of parents does not match the expected deindent level.
+        """
+        self._update_config_lines(line)
+        for line in self.generator_config:
+            if not line[0].isspace():
+                self._current_parents = ()
+                self.indent_level = 0
+                return line
+
+            spaces = self.get_leading_space_count(line)
+            if spaces == self.indent_level:
+                pass
+            elif spaces > self.indent_level:
+                previous_config = self.all_config_lines[-1]
+                self._current_parents += (previous_config.config_line,)
+            else:
+                self._current_parents = self._remove_parents(line, spaces)
+
+            if spaces != self.indent_level:
+                self.indent_level = spaces
+
+            if self.is_banner_start(line):
+                banner_line = self._build_banner(line)
+                if banner_line is None or not banner_line[0].isspace():
+                    self._current_parents = ()
+                    self.indent_level = 0
+                    return banner_line
+                line = banner_line
+
+            self._update_config_lines(line)
+        return None
+
+
+    def build_config_relationship(self) -> t.List[ConfigLine]:
+        r"""Parse text tree of config lines and their parents.
+
+        Examples:
+            >>> config = (
+            ...     "interface Ethernet1/1\n"
+            ...     "  vlan 10\n"
+            ...     "  no shutdown\n"
+            ...     "interface Ethernet1/2\n"
+            ...     "  shutdown\n"
+            ... )
+            >>> config_tree = BaseSpaceConfigParser(config)
+            >>> config_tree.build_config_relationship() == \
+            ... [
+            ...     ConfigLine(config_line='interface Ethernet1/1', parents=()),
+            ...     ConfigLine(config_line='  vlan 10', parents=('interface Ethernet1/1',)),
+            ...     ConfigLine(config_line='  no shutdown', parents=('interface Ethernet1/1',)),
+            ...     ConfigLine(config_line='interface Ethernet1/2', parents=(),),
+            ...     ConfigLine(config_line='  shutdown', parents=('interface Ethernet1/2',))
+            ... ]
+            True
+        """
+        for line in self.generator_config:
+            if not line[0].isspace():
+                self._current_parents = ()
+                if self.is_banner_start(line):
+                    line = self._build_banner(line)  # type: ignore
+            else:
+                previous_config = self.all_config_lines[-1]
+                self._current_parents = (previous_config.config_line,)
+                self.indent_level = self.get_leading_space_count(line)
+                if not self.is_banner_start(line):
+                    line = self._build_nested_config(line)  # type: ignore
+                else:
+                    line = self._build_banner(line)  # type: ignore
+                    if line is not None and line[0].isspace():
+                        line = self._build_nested_config(line)  # type: ignore
+                    else:
+                        self._current_parents = ()
+
+            if line is None:
+                break
+            elif self.is_banner_start(line):
+                line = self._build_banner(line)  # type: ignore
+
+            self._update_config_lines(line)
+        return self.config_lines

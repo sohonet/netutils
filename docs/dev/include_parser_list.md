@@ -1,5 +1,6 @@
 | OS Name | Parser Class |
 | ---------- | ------ |
+| adva_embedded_os | netutils.config.parser.AdvaConfigParser |
 | arista_eos | netutils.config.parser.EOSConfigParser |
 | aruba_aoscx | netutils.config.parser.ArubaConfigParser |
 | bigip_f5 | netutils.config.parser.F5ConfigParser |
