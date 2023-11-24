@@ -1,30 +1,4 @@
 home
-configure snmp
-  delete community "private"
-
-home
-configure snmp
-  delete community "public"
-
-home
-configure snmp
-  add community "secret" readwrite
-
-home
-configure snmp
-  add target-params "Params" snmpv2c snmpv2c "secret" no-auth
-
-home
-configure snmp
-  add target-address "target1" "10.0.0.2:161" ipv4 60 3 "info" "Params" enabled
-  configure target-address "target1" bulk-traps-control disabled
-
-home
-configure snmp
-  add target-address "target2" "10.0.0.5:161" ipv4 60 3 "info" "Params" enabled
-  configure target-address "target2" bulk-traps-control disabled
-
-home
 network-element ne-1
   configure nte ntexg108-1-1-1
     configure access-port access-1-1-1-3
@@ -55,3 +29,30 @@ network-element ne-1
       cpd-filter 01-80-c2-00-00-0d pass-thru
       cpd-filter 01-80-c2-00-00-0e pass-thru
       cpd-filter 01-80-c2-00-00-0f pass-thru
+
+home
+configure snmp
+  delete community "private"
+
+home
+configure snmp
+  delete community "public"
+
+home
+configure snmp
+  add community "secret" readwrite
+
+home
+configure snmp
+  add target-params "Params" snmpv2c snmpv2c "secret" no-auth
+
+home
+configure snmp
+  add target-address "target1" "10.0.0.2:161" ipv4 60 3 "info" "Params" enabled
+  configure target-address "target1" bulk-traps-control disabled
+
+home
+configure snmp
+  add target-address "target2" "10.0.0.5:161" ipv4 60 3 "info" "Params" enabled
+  configure target-address "target2" bulk-traps-control disabled
+

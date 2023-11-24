@@ -1709,4 +1709,6 @@ class AdvaConfigParser(BaseSpaceConfigParser):
                 line = self._build_banner(line)  # type: ignore
 
             self._update_config_lines(line)
+
+        self.config_lines = sorted(self.config_lines, key = lambda x: str(''.join(x.parents)) + str(x.config_line))
         return self.config_lines
