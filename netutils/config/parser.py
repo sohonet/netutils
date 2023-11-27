@@ -1583,7 +1583,6 @@ class AdvaConfigParser(BaseSpaceConfigParser):
     comment_chars: t.List[str] = ["#", "home", "back"]
     banner_start: t.List[str] = []
 
-
     def __init__(self, config: str):
         """Create ConfigParser Object.
 
@@ -1662,7 +1661,6 @@ class AdvaConfigParser(BaseSpaceConfigParser):
             self._update_config_lines(line)
         return None
 
-
     def build_config_relationship(self) -> t.List[ConfigLine]:
         r"""Parse text tree of config lines and their parents.
 
@@ -1710,5 +1708,5 @@ class AdvaConfigParser(BaseSpaceConfigParser):
 
             self._update_config_lines(line)
 
-        self.config_lines = sorted(self.config_lines, key = lambda x: str(''.join(x.parents)) + str(x.config_line))
+        self.config_lines = sorted(self.config_lines, key=lambda x: str("".join(x.parents)) + str(x.config_line))
         return self.config_lines
