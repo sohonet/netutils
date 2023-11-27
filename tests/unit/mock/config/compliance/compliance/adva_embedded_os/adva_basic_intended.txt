@@ -1,0 +1,65 @@
+network-element ne-1
+  configure nte nte104_e-1-1-1
+    configure access-port access-1-1-1-6
+      admin-state unassigned
+      service-type evpl
+      alias "CUST-HANDOFF"
+      port-vlan-id 1-0
+      a2n-push-port-vid disabled
+      priority-mapping-profile prio_map_profile-1
+network-element ne-1
+  configure nte nte104_e-1-1-1
+    configure access-port access-1-1-1-6
+      cpd-filter 01-80-c2-00-00-00 pass-thru
+      cpd-filter 01-80-c2-00-00-01 pass-thru
+      cpd-filter 01-80-c2-00-00-02 pass-thru
+      cpd-filter 01-80-c2-00-00-03 pass-thru
+      cpd-filter 01-80-c2-00-00-04 pass-thru
+      cpd-filter 01-80-c2-00-00-05 pass-thru
+      cpd-filter 01-80-c2-00-00-06 pass-thru
+      cpd-filter 01-80-c2-00-00-07 pass-thru
+      cpd-filter 01-80-c2-00-00-08 pass-thru
+      cpd-filter 01-80-c2-00-00-09 pass-thru
+      cpd-filter 01-80-c2-00-00-0a pass-thru
+      cpd-filter 01-80-c2-00-00-0b pass-thru
+      cpd-filter 01-80-c2-00-00-0c pass-thru
+      cpd-filter 01-80-c2-00-00-0d pass-thru
+      cpd-filter 01-80-c2-00-00-0e pass-thru
+      cpd-filter 01-80-c2-00-00-0f pass-thru
+network-element ne-1
+  configure nte nte104_e-1-1-1
+    configure network-port network-1-1-1-1
+      alias "TO::SWITCH::14"
+network-element ne-1
+  configure nte nte104_e-1-1-1
+    configure access-port access-1-1-1-6
+      add flow flow-1-1-1-6-1 "SERVICE-00090275" regular-evc enabled disabled disabled disabled 1 disabled push-vid 1015 none "" 999872000 128000 access-interface access-1-1-1-6 network-interface network-1-1-1-1 flow-based n2a-prio-mapping-profile none a2n-prio-mapping-profile none
+      configure flow flow-1-1-1-6-1
+        access-learning-ctrl mac-based
+        network-learning-ctrl mac-based
+        access-max-forwarding-entries 4096
+        network-max-forwarding-entries 4096
+network-element ne-1
+  configure nte nte104_e-1-1-1
+    configure access-port access-1-1-1-6
+      configure flow flow-1-1-1-6-1
+        configure a2n-shaper a2n_shaper-1-1-1-6-1-0
+          buffersize 1500
+network-element ne-1
+  configure nte nte104_e-1-1-1
+    configure access-port access-1-1-1-6
+      configure flow flow-1-1-1-6-1
+        configure a2n-policer a2n_policer-1-1-1-6-1-0
+          cbs 1024
+          ebs 16
+          cir 999872000
+          eir 128000
+network-element ne-1
+  configure nte nte104_e-1-1-1
+    configure access-port access-1-1-1-6
+      configure n2a-shaper port_n2a_shaper-1-1-1-6-1
+        buffersize 1024
+network-element ne-1
+  configure nte nte104_e-1-1-1
+    configure access-port access-1-1-1-6
+      admin-state in-service
