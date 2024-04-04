@@ -1597,6 +1597,8 @@ class AdvaConfigParser(BaseSpaceConfigParser):
         self.all_config_lines: t.List[ConfigLine] = []
         self.build_config_relationship()
 
+        super(AdvaConfigParser, self).__init__(config)
+
     @property
     def banner_end(self) -> str:
         """Demarcate End of Banner char(s)."""
@@ -1661,6 +1663,19 @@ class AdvaConfigParser(BaseSpaceConfigParser):
             self._update_config_lines(line)
         return None
 
+    def _reorder_commands(self, config_lines):
+        reordered_lines = []
+        last_line = ""
+        for line in config_lines:
+            # Line 'admin-state unassigned' should be ordered before 'admin-state in-service' otherwise 'admin-state in-service' will be unset.
+            if line.config_line.strip() == "admin-state unassigned" and last_line == "admin-state in-service":
+                reordered_lines.insert(-1, line)
+            else:
+                reordered_lines.append(line)
+            last_line = line.config_line.strip()
+
+        return reordered_lines
+
     def build_config_relationship(self) -> t.List[ConfigLine]:
         r"""Parse text tree of config lines and their parents.
 
@@ -1708,5 +1723,10 @@ class AdvaConfigParser(BaseSpaceConfigParser):
 
             self._update_config_lines(line)
 
-        self.config_lines = sorted(self.config_lines, key=lambda x: str("".join(x.parents)) + str(x.config_line))
+        # Sort config lines so that parents are deduplicated. Command order is also set alphabetically
+        sorted_config_lines = sorted(self.config_lines, key=lambda x: str("".join(x.parents)) + str(x.config_line))
+
+        # Do custom sorting to make sure commands are in the correct order
+        self.config_lines = self._reorder_commands(sorted_config_lines)
+
         return self.config_lines

@@ -37,6 +37,10 @@ data = [
         parents=("network-element ne-1", "  configure nte ntexg108-1-1-1", "    configure access-port access-1-1-1-3"),
     ),
     ConfigLine(
+        config_line="      admin-state in-service",
+        parents=("network-element ne-1", "  configure nte ntexg108-1-1-1", "    configure access-port access-1-1-1-3"),
+    ),
+    ConfigLine(
         config_line='      alias "CUST-HANDOFF"',
         parents=("network-element ne-1", "  configure nte ntexg108-1-1-1", "    configure access-port access-1-1-1-3"),
     ),
