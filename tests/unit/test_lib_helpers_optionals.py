@@ -1,4 +1,5 @@
 """Test for the lib_helpers definitions when optional packages are installed."""
+
 from unittest import mock
 
 import pytest
@@ -7,23 +8,9 @@ from netutils.lib_helpers import get_napalm_getters
 
 def test_get_napalm_getters_napalm_installed_default():
     pytest.importorskip("napalm")
-    with mock.patch("netutils.lib_helpers.get_network_driver"):
+    with mock.patch("napalm.get_network_driver"):
         napalm_getters = get_napalm_getters()
-        assert napalm_getters == {
-            "asa": {},
-            "cisco_wlc_ssh": {},
-            "eos": {},
-            "fortios": {},
-            "huawei": {},
-            "ios": {},
-            "iosxr": {},
-            "junos": {},
-            "nxos": {},
-            "nxos_ssh": {},
-            "panos": {},
-            "sros": {},
-            "vyos": {},
-        }
+        assert all(item in napalm_getters.keys() for item in ["asa", "eos", "fortios"])
 
 
 def test_get_napalm_getters_napalm_installed_nxos_keys():

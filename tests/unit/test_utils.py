@@ -1,4 +1,5 @@
 """Test for the library utilities."""
+
 import os
 from glob import glob
 from importlib import import_module
@@ -23,7 +24,11 @@ _EXCLUDED_FILES = [
 
 _EXCLUDED_DECORATOR_FUNCTIONS = ["wraps", "total_ordering", "abstractmethod"]
 
-_EXCLUDED_FUNCTIONS = ["jinja2_convenience_function", "import_module", "get_network_driver"]
+_EXCLUDED_FUNCTIONS = [
+    "jinja2_convenience_function",
+    "import_module",
+    "get_network_driver",
+]
 
 
 @pytest.fixture
@@ -52,7 +57,7 @@ def get_jinja2_function_names():
 
 def test_jinja2_mapping_contains_all_functions(get_jinja2_function_names):  # pylint: disable=redefined-outer-name
     mapping_function_names = [path.split(".")[-1] for path in list(_JINJA2_FUNCTION_MAPPINGS.values())]
-    sorted_get_jinja2_function_names = sorted(get_jinja2_function_names)
+    sorted_get_jinja2_function_names = sorted(list(set(get_jinja2_function_names)))
     sorted_mapping_function_names = sorted(mapping_function_names)
 
     assert sorted_get_jinja2_function_names == sorted_mapping_function_names

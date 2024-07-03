@@ -5,6 +5,7 @@ from importlib import import_module
 
 _JINJA2_FUNCTION_MAPPINGS = {
     "asn_to_int": "asn.asn_to_int",
+    "int_to_asdot": "asn.int_to_asdot",
     "name_to_bits": "bandwidth.name_to_bits",
     "name_to_bytes": "bandwidth.name_to_bytes",
     "bits_to_name": "bandwidth.bits_to_name",
@@ -34,7 +35,10 @@ _JINJA2_FUNCTION_MAPPINGS = {
     "ip_subtract": "ip.ip_subtract",
     "is_classful": "ip.is_classful",
     "is_ip": "ip.is_ip",
+    "is_ip_range": "ip.is_ip_range",
+    "is_ip_within": "ip.is_ip_within",
     "is_netmask": "ip.is_netmask",
+    "is_network": "ip.is_network",
     "netmask_to_cidr": "ip.netmask_to_cidr",
     "cidr_to_netmask": "ip.cidr_to_netmask",
     "cidr_to_netmaskv6": "ip.cidr_to_netmaskv6",
@@ -42,6 +46,7 @@ _JINJA2_FUNCTION_MAPPINGS = {
     "get_broadcast_address": "ip.get_broadcast_address",
     "get_first_usable": "ip.get_first_usable",
     "get_peer_ip": "ip.get_peer_ip",
+    "get_range_ips": "ip.get_range_ips",
     "get_usable_range": "ip.get_usable_range",
     "ipaddress_address": "ip.ipaddress_address",
     "ipaddress_interface": "ip.ipaddress_interface",
@@ -81,8 +86,16 @@ _JINJA2_FUNCTION_MAPPINGS = {
     "uptime_seconds_to_string": "time.uptime_seconds_to_string",
     "uptime_string_to_seconds": "time.uptime_string_to_seconds",
     "get_napalm_getters": "lib_helpers.get_napalm_getters",
+    "paloalto_panos_clean_newlines": "config.conversion.paloalto_panos_clean_newlines",
     "paloalto_panos_brace_to_set": "config.conversion.paloalto_panos_brace_to_set",
+    "compare_version_loose": "os_version.compare_version_loose",
+    "compare_version_strict": "os_version.compare_version_strict",
     "get_upgrade_path": "os_version.get_upgrade_path",
+    "hash_data": "hash.hash_data",
+    "get_ips_sorted": "ip.get_ips_sorted",
+    "version_metadata": "os_version.version_metadata",
+    "get_nist_urls": "nist.get_nist_urls",
+    "get_nist_vendor_platform_urls": "nist.get_nist_vendor_platform_urls",
 }
 
 

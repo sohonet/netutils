@@ -1,0 +1,26 @@
+| NORMALIZED | | CAPIRCA |
+| ---------- | -- | ------ |
+| arista_eos | → | arista |
+| aruba_aoscx | → | aruba |
+| brocade_nos | → | brocade |
+| cisco_asa | → | ciscoasa |
+| cisco_ios | → | cisco |
+| cisco_nxos | → | cisconx |
+| cisco_xe | → | cisco |
+| cisco_xr | → | ciscoxr |
+| cloudarmor | → | cloudarmor |
+| gce | → | gce |
+| gcp_hf | → | gcp_hf |
+| ipset | → | ipset |
+| iptables | → | iptables |
+| juniper_junos | → | juniper |
+| k8s | → | k8s |
+| openconfig | → | openconfig |
+| packetfilter | → | packetfilter |
+| paloalto_panos | → | paloalto |
+| pcap | → | pcap |
+| sonic | → | sonic |
+| speedway | → | speedway |
+| vmware_nsxt | → | nsxt |
+| vmware_nsxv | → | nsxv |
+| windows | → | windows |

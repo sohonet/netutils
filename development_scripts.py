@@ -1,4 +1,5 @@
 """Developer script to generate markdown tables."""
+
 from jinja2 import Environment, BaseLoader, select_autoescape
 from netutils.utils import _JINJA2_FUNCTION_MAPPINGS
 from netutils import lib_mapper
@@ -34,77 +35,65 @@ TEMPLATE = {
 
 MAPPER = {
     "LIB_MAPPER_TEMPLATE": {
-        "ansible": {
+        "aerleon": {
+            "header_src": "AERLEON",
+            "header_dst": "NORMALIZED",
+            "_dict": lib_mapper.AERLEON_LIB_MAPPER,
+            "_file": "docs/user/lib_mapper/aerleon.md",
+        },
+        "aerleon_reverse": {
             "header_src": "NORMALIZED",
-            "header_dst": "ANSIBLE",
+            "header_dst": "AERLEON",
+            "_dict": lib_mapper.AERLEON_LIB_MAPPER_REVERSE,
+            "_file": "docs/user/lib_mapper/aerleon_reverse.md",
+        },
+        "ansible": {
+            "header_src": "ANSIBLE",
+            "header_dst": "NORMALIZED",
             "_dict": lib_mapper.ANSIBLE_LIB_MAPPER,
             "_file": "docs/user/lib_mapper/ansible.md",
         },
         "ansible_reverse": {
-            "header_src": "ANSIBLE",
-            "header_dst": "NORMALIZED",
+            "header_src": "NORMALIZED",
+            "header_dst": "ANSIBLE",
             "_dict": lib_mapper.ANSIBLE_LIB_MAPPER_REVERSE,
             "_file": "docs/user/lib_mapper/ansible_reverse.md",
         },
-        "napalm": {
-            "header_src": "NORMALIZED",
-            "header_dst": "NAPALM",
-            "_dict": lib_mapper.NAPALM_LIB_MAPPER,
-            "_file": "docs/user/lib_mapper/napalm.md",
-        },
-        "napalm_reverse": {
-            "header_src": "NAPALM",
+        "capirca": {
+            "header_src": "CAPIRCA",
             "header_dst": "NORMALIZED",
-            "_dict": lib_mapper.NAPALM_LIB_MAPPER_REVERSE,
-            "_file": "docs/user/lib_mapper/napalm_reverse.md",
+            "_dict": lib_mapper.CAPIRCA_LIB_MAPPER,
+            "_file": "docs/user/lib_mapper/capirca.md",
         },
-        "ntctemplates": {
+        "capirca_reverse": {
             "header_src": "NORMALIZED",
-            "header_dst": "NTCTEMPLATES",
-            "_dict": lib_mapper.NTCTEMPLATES_LIB_MAPPER,
-            "_file": "docs/user/lib_mapper/ntctemplates.md",
+            "header_dst": "CAPIRCA",
+            "_dict": lib_mapper.CAPIRCA_LIB_MAPPER_REVERSE,
+            "_file": "docs/user/lib_mapper/capirca_reverse.md",
         },
-        "ntctemplates_reverse": {
-            "header_src": "NTCTEMPLATES",
+        "dna_center": {
+            "header_src": "DNA_CENTER",
             "header_dst": "NORMALIZED",
-            "_dict": lib_mapper.NTCTEMPLATES_LIB_MAPPER_REVERSE,
-            "_file": "docs/user/lib_mapper/ntctemplates_reverse.md",
+            "_dict": lib_mapper.DNA_CENTER_LIB_MAPPER,
+            "_file": "docs/user/lib_mapper/dna_center.md",
         },
-        "pyats": {
+        "dna_center_reverse": {
             "header_src": "NORMALIZED",
-            "header_dst": "PYATS",
-            "_dict": lib_mapper.PYATS_LIB_MAPPER,
-            "_file": "docs/user/lib_mapper/pyats.md",
+            "header_dst": "DNA_CENTER",
+            "_dict": lib_mapper.DNA_CENTER_LIB_MAPPER_REVERSE,
+            "_file": "docs/user/lib_mapper/dna_center_reverse.md",
         },
-        "pyats_reverse": {
-            "header_src": "PYATS",
+        "forwardnetworks": {
+            "header_src": "FORWARDNETWORKS",
             "header_dst": "NORMALIZED",
-            "_dict": lib_mapper.PYATS_LIB_MAPPER_REVERSE,
-            "_file": "docs/user/lib_mapper/pyats_reverse.md",
+            "_dict": lib_mapper.FORWARDNETWORKS_LIB_MAPPER,
+            "_file": "docs/user/lib_mapper/forwardnetworks.md",
         },
-        "pyntc": {
+        "forwardnetworks_reverse": {
             "header_src": "NORMALIZED",
-            "header_dst": "PYNTC",
-            "_dict": lib_mapper.PYNTC_LIB_MAPPER,
-            "_file": "docs/user/lib_mapper/pyntc.md",
-        },
-        "pyntc_reverse": {
-            "header_src": "PYNTC",
-            "header_dst": "NORMALIZED",
-            "_dict": lib_mapper.PYNTC_LIB_MAPPER_REVERSE,
-            "_file": "docs/user/lib_mapper/pyntc_reverse.md",
-        },
-        "scrapli": {
-            "header_src": "NORMALIZED",
-            "header_dst": "SCRAPLI",
-            "_dict": lib_mapper.SCRAPLI_LIB_MAPPER,
-            "_file": "docs/user/lib_mapper/scrapli.md",
-        },
-        "scrapli_reverse": {
-            "header_src": "SCRAPLI",
-            "header_dst": "NORMALIZED",
-            "_dict": lib_mapper.SCRAPLI_LIB_MAPPER_REVERSE,
-            "_file": "docs/user/lib_mapper/scrapli_reverse.md",
+            "header_dst": "FORWARDNETWORKS",
+            "_dict": lib_mapper.FORWARDNETWORKS_LIB_MAPPER_REVERSE,
+            "_file": "docs/user/lib_mapper/forwardnetworks_reverse.md",
         },
         "hierconfig": {
             "header_src": "HIERCONFIG",
@@ -117,6 +106,102 @@ MAPPER = {
             "header_dst": "HIERCONFIG",
             "_dict": lib_mapper.HIERCONFIG_LIB_MAPPER_REVERSE,
             "_file": "docs/user/lib_mapper/hierconfig_reverse.md",
+        },
+        "napalm": {
+            "header_src": "NAPALM",
+            "header_dst": "NORMALIZED",
+            "_dict": lib_mapper.NAPALM_LIB_MAPPER,
+            "_file": "docs/user/lib_mapper/napalm.md",
+        },
+        "napalm_reverse": {
+            "header_src": "NORMALIZED",
+            "header_dst": "NAPALM",
+            "_dict": lib_mapper.NAPALM_LIB_MAPPER_REVERSE,
+            "_file": "docs/user/lib_mapper/napalm_reverse.md",
+        },
+        "netmiko": {
+            "header_src": "NETMIKO",
+            "header_dst": "NORMALIZED",
+            "_dict": lib_mapper.NETMIKO_LIB_MAPPER,
+            "_file": "docs/user/lib_mapper/netmiko.md",
+        },
+        "netmiko_reverse": {
+            "header_src": "NORMALIZED",
+            "header_dst": "NETMIKO",
+            "_dict": lib_mapper.NETMIKO_LIB_MAPPER_REVERSE,
+            "_file": "docs/user/lib_mapper/netmiko_reverse.md",
+        },
+        "netutilsparser": {
+            "header_src": "NETUTILSPARSER",
+            "header_dst": "NORMALIZED",
+            "_dict": lib_mapper.NETUTILSPARSER_LIB_MAPPER,
+            "_file": "docs/user/lib_mapper/netutilsparser.md",
+        },
+        "netutilsparser_reverse": {
+            "header_src": "NORMALIZED",
+            "header_dst": "NETUTILSPARSER",
+            "_dict": lib_mapper.NETUTILSPARSER_LIB_MAPPER_REVERSE,
+            "_file": "docs/user/lib_mapper/netutilsparser_reverse.md",
+        },
+        "nist": {
+            "header_src": "NIST",
+            "header_dst": "NORMALIZED",
+            "_dict": lib_mapper.NIST_LIB_MAPPER,
+            "_file": "docs/user/lib_mapper/nist.md",
+        },
+        "nist_reverse": {
+            "header_src": "NORMALIZED",
+            "header_dst": "NIST",
+            "_dict": lib_mapper.NIST_LIB_MAPPER_REVERSE,
+            "_file": "docs/user/lib_mapper/nist_reverse.md",
+        },
+        "ntctemplates": {
+            "header_src": "NTCTEMPLATES",
+            "header_dst": "NORMALIZED",
+            "_dict": lib_mapper.NTCTEMPLATES_LIB_MAPPER,
+            "_file": "docs/user/lib_mapper/ntctemplates.md",
+        },
+        "ntctemplates_reverse": {
+            "header_src": "NORMALIZED",
+            "header_dst": "NTCTEMPLATES",
+            "_dict": lib_mapper.NTCTEMPLATES_LIB_MAPPER_REVERSE,
+            "_file": "docs/user/lib_mapper/ntctemplates_reverse.md",
+        },
+        "pyats": {
+            "header_src": "PYATS",
+            "header_dst": "NORMALIZED",
+            "_dict": lib_mapper.PYATS_LIB_MAPPER,
+            "_file": "docs/user/lib_mapper/pyats.md",
+        },
+        "pyats_reverse": {
+            "header_src": "NORMALIZED",
+            "header_dst": "PYATS",
+            "_dict": lib_mapper.PYATS_LIB_MAPPER_REVERSE,
+            "_file": "docs/user/lib_mapper/pyats_reverse.md",
+        },
+        "pyntc": {
+            "header_src": "PYNTC",
+            "header_dst": "NORMALIZED",
+            "_dict": lib_mapper.PYNTC_LIB_MAPPER,
+            "_file": "docs/user/lib_mapper/pyntc.md",
+        },
+        "pyntc_reverse": {
+            "header_src": "NORMALIZED",
+            "header_dst": "PYNTC",
+            "_dict": lib_mapper.PYNTC_LIB_MAPPER_REVERSE,
+            "_file": "docs/user/lib_mapper/pyntc_reverse.md",
+        },
+        "scrapli": {
+            "header_src": "SCRAPLI",
+            "header_dst": "NORMALIZED",
+            "_dict": lib_mapper.SCRAPLI_LIB_MAPPER,
+            "_file": "docs/user/lib_mapper/scrapli.md",
+        },
+        "scrapli_reverse": {
+            "header_src": "NORMALIZED",
+            "header_dst": "SCRAPLI",
+            "_dict": lib_mapper.SCRAPLI_LIB_MAPPER_REVERSE,
+            "_file": "docs/user/lib_mapper/scrapli_reverse.md",
         },
     },
     "PARSER_MAPPER_TEMPLATE": {

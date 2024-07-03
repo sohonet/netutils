@@ -47,6 +47,22 @@ Another use case could be using an example like the above in an Ansible filter. 
 
 --8<-- "docs/user/lib_mapper/ansible_reverse.md"
 
+## Forward Networks Mapper
+
+--8<-- "docs/user/lib_mapper/forwardnetworks.md"
+
+## Reverse Forward Networks Mapper
+
+--8<-- "docs/user/lib_mapper/forwardnetworks_reverse.md"
+
+## Hier Config Mapper
+
+--8<-- "docs/user/lib_mapper/hierconfig.md"
+
+## Reverse Hier Config Mapper
+
+--8<-- "docs/user/lib_mapper/hierconfig_reverse.md"
+
 ## Napalm Mapper
 
 --8<-- "docs/user/lib_mapper/napalm.md"
@@ -54,6 +70,23 @@ Another use case could be using an example like the above in an Ansible filter. 
 ## Reverse Napalm Mapper
 
 --8<-- "docs/user/lib_mapper/napalm_reverse.md"
+
+## Netmiko Mapper
+
+--8<-- "docs/user/lib_mapper/netmiko.md"
+
+## Reverse Netmiko Mapper
+
+--8<-- "docs/user/lib_mapper/netmiko_reverse.md"
+
+
+## Netutils Parser Mapper
+
+--8<-- "docs/user/lib_mapper/netutilsparser.md"
+
+## Reverse Netutils Parser Mapper
+
+--8<-- "docs/user/lib_mapper/netutilsparser_reverse.md"
 
 ## NTC Templates Mapper
 
@@ -84,10 +117,5 @@ Another use case could be using an example like the above in an Ansible filter. 
 --8<-- "docs/user/lib_mapper/scrapli.md"
 
 ## Reverse Scrapli Mapper
+
 --8<-- "docs/user/lib_mapper/scrapli_reverse.md"
-
-## Hier Config Mapper
---8<-- "docs/user/lib_mapper/hierconfig.md"
-
-## Reverse Hier Config Mapper
---8<-- "docs/user/lib_mapper/hierconfig_reverse.md"

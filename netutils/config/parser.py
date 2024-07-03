@@ -1,4 +1,5 @@
 """Parsers for different network operating systems."""
+
 # pylint: disable=no-member,super-with-arguments,invalid-overridden-method,raise-missing-from,invalid-overridden-method,inconsistent-return-statements,super-with-arguments,redefined-argument-from-local,no-else-break,useless-super-delegation,too-many-lines
 
 import re
@@ -95,6 +96,8 @@ class BaseSpaceConfigParser(BaseConfigParser):
             True if line starts banner, else False.
         """
         for banner_start in self.banner_start:
+            if not line:
+                return False
             if line.lstrip().startswith(banner_start):
                 return True
         return False
@@ -109,6 +112,7 @@ class BaseSpaceConfigParser(BaseConfigParser):
             True if line is a comment, else False.
 
         Examples:
+            >>> from netutils.config.parser import BaseSpaceConfigParser
             >>> BaseSpaceConfigParser("interface Ethernet1/1").is_comment("interface Ethernet1/1")
             False
             >>> BaseSpaceConfigParser("!").is_comment("!")
@@ -128,6 +132,7 @@ class BaseSpaceConfigParser(BaseConfigParser):
             The non-space and non-comment lines from ``config``.
 
         Examples:
+            >>> from netutils.config.parser import BaseSpaceConfigParser
             >>> config = '''!
             ... aaa group server tacacs+ auth
             ...  server 10.1.1.1
@@ -162,6 +167,7 @@ class BaseSpaceConfigParser(BaseConfigParser):
             The number of leading spaces.
 
         Examples:
+            >>> from netutils.config.parser import BaseSpaceConfigParser
             >>> config = '''interface GigabitEthernet1\n description link to ISP'''
             >>> config_line = " description link to ISP"
             >>> indent_level = BaseSpaceConfigParser(config).get_leading_space_count(config_line)
@@ -286,6 +292,7 @@ class BaseSpaceConfigParser(BaseConfigParser):
         r"""Parse text tree of config lines and their parents.
 
         Examples:
+            >>> from netutils.config.parser import BaseSpaceConfigParser, ConfigLine
             >>> config = (
             ...     "interface Ethernet1/1\n"
             ...     "  vlan 10\n"
@@ -326,6 +333,9 @@ class BaseSpaceConfigParser(BaseConfigParser):
                 break
             elif self.is_banner_start(line):
                 line = self._build_banner(line)  # type: ignore
+                # line can potentially be another banner start therefore we do a secondary check.
+                if self.is_banner_start(line):
+                    line = self._build_banner(line)  # type: ignore
 
             self._update_config_lines(line)
         return self.config_lines
@@ -354,6 +364,7 @@ class BaseSpaceConfigParser(BaseConfigParser):
             configuration under that parent pattern.
 
         Examples:
+            >>> from netutils.config.parser import BaseSpaceConfigParser
             >>> config = '''
             ... router bgp 45000
             ...   address-family ipv4 unicast
@@ -388,6 +399,7 @@ class BaseSpaceConfigParser(BaseConfigParser):
             configuration under that parent pattern.
 
         Examples:
+            >>> from netutils.config.parser import BaseSpaceConfigParser
             >>> config = '''
             ... router bgp 45000
             ...   address-family ipv4 unicast
@@ -429,6 +441,7 @@ class BaseBraceConfigParser(BaseConfigParser):  # pylint: disable=abstract-metho
         r"""Parse text tree of config lines and their parents.
 
         Examples:
+            >>> from netutils.config.parser import BaseSpaceConfigParser, ConfigLine
             >>> config = '''auth ldap system-auth {
             ...         port ldaps
             ...         servers { ams-lda01.ntc.com }
@@ -473,6 +486,7 @@ class BaseBraceConfigParser(BaseConfigParser):  # pylint: disable=abstract-metho
             The multiline string text that was added to ``self.config_lines``.
 
         Examples:
+            >>> from netutils.config.parser import BaseSpaceConfigParser, ConfigLine
             >>> config = (
             ...     'sys syslog {\n'
             ...     '    include "\n'
@@ -543,6 +557,9 @@ class CiscoConfigParser(BaseSpaceConfigParser):
     def is_banner_one_line(config_line: str) -> bool:
         """Determine if all banner config is on one line."""
         _, delimeter, banner = config_line.partition("^C")
+        # if the banner is the delimeter is a single line empty banner. e.g banner motd ^C^C which ios allows.
+        if banner == "^C":
+            return True
         # Based on NXOS configs, the banner delimeter is ignored until another char is used
         banner_config_start = banner.lstrip(delimeter)
         if delimeter not in banner_config_start:
@@ -604,7 +621,14 @@ class IOSConfigParser(CiscoConfigParser, BaseSpaceConfigParser):
         new_config_lines: t.List[ConfigLine] = []
         for line in self.config_lines:
             if line in self.same_line_children:
-                previous_line = new_config_lines[-1]
+                try:
+                    previous_line = new_config_lines[-1]
+                except IndexError as error:
+                    raise IndexError(
+                        f"This error is likely from a duplicate line detected at the line `{line.config_line}`, "
+                        "see https://netutils.readthedocs.io/en/latest/dev/dev_config/#duplicate-line-detection "
+                        f"for more details.\nOriginal Error: {error}"
+                    )
                 previous_config_line = previous_line.config_line
                 current_parents = previous_line.parents + (previous_config_line,)
                 line = ConfigLine(line.config_line, current_parents)
@@ -634,6 +658,7 @@ class IOSConfigParser(CiscoConfigParser, BaseSpaceConfigParser):
         r"""Parse text tree of config lines and their parents.
 
         Examples:
+            >>> from netutils.config.parser import IOSConfigParser, ConfigLine
             >>> config = '''
             ... interface Ethernet1/1
             ...   vlan 10
@@ -786,6 +811,7 @@ class F5ConfigParser(BaseBraceConfigParser):
         r"""Parse text tree of config lines and their parents.
 
         Examples:
+            >>> from netutils.config.parser import F5ConfigParser, ConfigLine
             >>> config = '''apm resource webtop-link aShare {
             ...     application-uri http://funshare.example.com
             ...     customization-group a_customization_group
@@ -838,13 +864,7 @@ class F5ConfigParser(BaseBraceConfigParser):
             The multiline string text that was added to ``self.config_lines``.
 
         Examples:
-            config = '''apm resource webtop-link aShare {
-                application-uri http://funshare.example.com
-                customization-group a_customization_group
-            }
-            apm sso form-based portal_ext_sso_form_based {
-                form-action /Citrix/Example/ExplicitAuth/LoginAttempt
-            >>>
+            >>> from netutils.config.parser import F5ConfigParser, ConfigLine
             >>> config = '''apm resource webtop-link aShare {
             ...     application-uri http://funshare.example.com
             ...     customization-group a_customization_group
@@ -928,6 +948,7 @@ class ASAConfigParser(CiscoConfigParser):
         r"""Parse text tree of config lines and their parents.
 
         Examples:
+            >>> from netutils.config.parser import ASAConfigParser, ConfigLine
             >>> config = '''
             ... interface Management0/0
             ...  management-only
@@ -995,6 +1016,7 @@ class FortinetConfigParser(BaseSpaceConfigParser):
             True if line has 'end' or 'next', else False.
 
         Examples:
+            >>> from netutils.config.parser import FortinetConfigParser
             >>> FortinetConfigParser("config system virtual-switch").is_end_next("config system virtual-switch")
             False
             >>> FortinetConfigParser("end").is_end_next("end")
@@ -1310,6 +1332,7 @@ class IOSXRConfigParser(CiscoConfigParser):
         r"""Parse text tree of config lines and their parents.
 
         Examples:
+            >>> from netutils.config.parser import IOSXRConfigParser, ConfigLine
             >>> config = (
             ...     "interface Ethernet1/1\n"
             ...     "  vlan 10\n"
@@ -1472,6 +1495,7 @@ class PaloAltoNetworksConfigParser(BaseSpaceConfigParser):
         r"""Parse text of config lines and find their parents.
 
         Examples:
+            >>> from netutils.config.parser import PaloAltoNetworksConfigParser, ConfigLine
             >>> config = (
             ...     "set deviceconfig system hostname firewall1\n"
             ...     "set deviceconfig system panorama local-panorama panorama-server 10.0.0.1\n"
@@ -1730,3 +1754,129 @@ class AdvaConfigParser(BaseSpaceConfigParser):
         self.config_lines = self._reorder_commands(sorted_config_lines)
 
         return self.config_lines
+class UbiquitiAirOSConfigParser(BaseSpaceConfigParser):
+    """Ubiquiti airOS config parser."""
+
+    comment_chars: t.List[str] = ["#", "###"]
+    banner_start: t.List[str] = []
+
+    @property
+    def banner_end(self) -> str:
+        """Demarcate End of Banner char(s)."""
+        raise NotImplementedError("Ubiquiti airOS platform doesn't have a banner.")
+
+    @property
+    def config_lines_only(self) -> str:
+        """Remove spaces and unwanted lines from config lines.
+
+        Returns:
+            The non-space and non-comment lines from ``config``.
+        """
+        config_lines = []
+        config = self.config.strip()
+        for line in config.splitlines():
+            if line.startswith("##A"):
+                config_lines.append(line)
+            if line and line != "##" and not self.is_comment(line):
+                config_lines.append(line)
+
+        return "\n".join(config_lines)
+
+
+class HPEConfigParser(BaseSpaceConfigParser):
+    """HPE Implementation of ConfigParser Class."""
+
+    regex_banner = re.compile(r"^header\s(\w+)\s+(?P<banner_delimiter>\^C|\S?)")
+
+    def __init__(self, config: str):
+        """Initialize the HPEConfigParser object."""
+        self.delimiter = ""
+        self._banner_end: t.Optional[str] = None
+        super(HPEConfigParser, self).__init__(config)
+
+    def _build_banner(self, config_line: str) -> t.Optional[str]:
+        """
+        Builds a banner configuration based on the given config_line.
+
+        Args:
+            config_line (str): The configuration line to process.
+
+        Returns:
+            Optional[str]: The next configuration line, or None if there are no more lines.
+
+        Raises:
+            ValueError: If the banner end cannot be parsed.
+        """
+        if self.is_banner_one_line(config_line):
+            self._update_config_lines(config_line)
+            try:
+                return next(self.generator_config)
+            except StopIteration:
+                return None
+        self._update_config_lines(config_line)
+        self._current_parents += (config_line,)
+        banner_config = []
+        for line in self.generator_config:
+            if not self.is_banner_end(line):
+                banner_config.append(line)
+            else:
+                banner_config.append(line)
+                line = "\n".join(banner_config)
+                if line.endswith(self.delimiter):
+                    banner, end, _ = line.rpartition(self.delimiter)
+                    line = banner.rstrip() + end
+                self._update_config_lines(line)
+                self._current_parents = self._current_parents[:-1]
+                try:
+                    return next(self.generator_config)
+                except StopIteration:
+                    return None
+        raise ValueError("Unable to parse banner end.")
+
+    def set_delimiter(self, config_line: str) -> None:
+        """Find delimiter character in banner and set self.delimiter to be it."""
+        banner_parsed = self.regex_banner.match(config_line)
+        if banner_parsed and "banner_delimiter" in banner_parsed.groupdict():
+            self.delimiter = banner_parsed.groupdict()["banner_delimiter"]
+            return None
+        raise ValueError("Unable to find banner delimiter.")
+
+    def is_banner_one_line(self, config_line: str) -> bool:
+        """Checks if the given configuration line represents a one-line banner."""
+        self.set_delimiter(config_line.strip())
+        _, _delimeter, banner = config_line.partition(self.delimiter)
+        banner_config_start = banner.lstrip(_delimeter)
+        if _delimeter not in banner_config_start:
+            return False
+        return True
+
+    def is_banner_start(self, line: str) -> bool:
+        """Checks if the given line is the start of a banner."""
+        state = super(HPEConfigParser, self).is_banner_start(line)
+        if state:
+            self.banner_end = line
+        return state
+
+    @property
+    def banner_end(self) -> str:
+        """Get the banner end."""
+        if self._banner_end is None:
+            raise RuntimeError("Banner end not yet set.")
+        return self._banner_end
+
+    @banner_end.setter
+    def banner_end(self, banner_start_line: str) -> None:
+        """Sets the delimiter for the end of the banner."""
+        self.set_delimiter(banner_start_line.strip())
+        self._banner_end = self.delimiter
+
+
+class HPComwareConfigParser(HPEConfigParser, BaseSpaceConfigParser):
+    """HP Comware Implementation of ConfigParser Class."""
+
+    banner_start: t.List[str] = ["header "]
+    comment_chars: t.List[str] = ["#"]
+
+    def _build_banner(self, config_line: str) -> t.Optional[str]:
+        """Build a banner from the given config line."""
+        return super(HPComwareConfigParser, self)._build_banner(config_line)
